@@ -62,7 +62,7 @@ Content-Type: text/plain
 eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjAwMDAwMDAwMDAwMDAwMDAwMCIsInBvaW50cyI6NTAsImNsYW4iOiJFWEFNUExFIiwiaWF0IjoxNjg5MTIwMDc0LCJuYmYiOjE2ODkxMjAwNzQsImV4cCI6MTY4OTEyMDEzNH0.YfNiHhAt0ZVHAk
 Mh5L2YNHNwmDwepWob1I22yKpXtRD5nTzxV5Q4bVXQYElHWUtZO0dh-DdF1LLX4qhNuTBNoLzAHTfksGNBhpLyZdUEKgeT8FN7KEF8OqJZR7CGoGTMtD2zstaZhpzFWdkKZ-qpro_v-IZlpTkxZrDxg7xy2X0TM2quB8OaNaau6Cw_EHLAibDRC_zCRbrxMlzNdJFstQ9gY
 EyNsCOnnwH5mCqouioM7qn1r7vDgC-Q8yg71ameLZQ0is72dA8v6tU_c_m33a7YEeYa2cI6w5pJl95W2IzlOsZ2Wi6HnmOvkVxXW20wYHg5gh7URDiwHA_8pLnsUA
-``
+```
 
 Where `:user` is the discord user id of the user the points should be added to. <br>
 The request body is a JWT token containing the following information:
