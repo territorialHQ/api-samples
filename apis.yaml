@@ -1,0 +1,219 @@
+openapi: 3.0.3
+info:
+  title: Territorial-HQ public API
+  description: Welcome to the Territorial-HQ public API. This API is used to interact with the Territorial-HQ platform. Only endpoints meant for public use are documented here.
+  version: 0.0.1-preview
+  license:
+    name: MIT
+    url: 'https://opensource.org/licenses/MIT'
+servers:
+  - url: "https://apis.territorial-hq.com/"
+    description: Production server
+tags:
+  - name: Clan
+    description: Clan related endpoints
+  - name: Content
+    description: Content related endpoints, we require you to link to the Territorial-HQ website when displaying content e.g. in a discord bot
+paths:
+  /api/Clan:
+    get:
+      tags:
+        - Clan
+      summary: Get all clans
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Clan"
+  /api/Clan/{id}:
+    get:
+      tags:
+        - Clan
+      summary: Get clan information by uuid
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid4
+          required: true
+          description: Unique identifier for the clan
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Clan"
+        204:
+          description: No content
+  /api/ContentPage:
+    get:
+      tags:
+        - Content
+      summary: Get all content pages
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ContentPage"
+  /api/ContentPage/{id}:
+    get:
+      tags:
+        - Content
+      summary: Get content page by uuid
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            format: uuid4
+          required: true
+          description: Unique identifier for the content page
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContentPage"
+        204:
+          description: No content
+
+components:
+  schemas:
+    Clan:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid4
+          description: Unique identifier for the clan
+          example: 3e39fe4d-df0a-46d0-b99e-6a4144569984
+        tag:
+          type: string
+          minLength: 1
+          maxLength: 6
+          description: The clan's tag (without brackets)
+          example: EXAMPLE
+        name:
+          type: string
+          description: Display name of the clan
+          example: Example Clan
+        description:
+          type: string
+          maxLength: 500
+          description: Short description of the clan
+          example: This is an example clan.
+        motto:
+          type: string
+          description: Clan motto (short quote)
+          example: To be or not to be
+        creator:
+          type: string
+          format: Snowflake
+          description: Discord ID of the responsible clan creator
+          example: "123456789012345678"
+        timestamp:
+          type: string
+          format: date-time
+          description: Timestamp of the clan creation to the api
+          example: 2021-01-01T00:00:00.000000
+        guildId:
+          type: integer
+          format: Snowflake
+          description: Discord ID of the clan guild
+          example: 123456789012345678
+        discordLink:
+          type: string
+          description: Link to the clan discord server
+          example: https://discord.gg/example
+        foundation:
+          type: string
+          format: month-year
+          description: Timestamp of the clan foundation
+          example: January 2021
+        founders:
+          type: string
+          description: List of founders
+          example: Founder1, Founder2, Founder3
+        history:
+          type: string
+          description: History of the clan
+          example: The example clan was founded in January 2021.
+        community:
+          type: string
+          description: Community description of the clan
+          example: The example clan is a heptapod language speaking clan.
+        features:
+          type: string
+          description: List of main clan features
+          example: Our clan has a bot, a website and a discord server.
+        miscellaneous:
+          type: string
+          description: Miscellaneous information about the clan
+          example: The example clan is a clan.
+        isPublished:
+          type: boolean
+          description: Whether the clan is published on the website or not (does not affect the api)
+          example: true
+        inReview:
+          type: boolean
+          description: Whether the clan is in review or not (does not affect the api)
+          example: false
+        botEndpoint:
+          type: string
+          description: Endpoint of the clan bot, documentation at https://github.com/territorialHQ/api-samples/blob/main/bot-endpoint.md
+          example: https://bot.example.com
+        assignedAppUsers:
+          type: array
+          items:
+            $ref: "#/components/schemas/AppUser"
+          description: List of assigned app users
+          example: []
+    AppUser:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid4
+          description: Unique identifier for the app user
+          example: 3e39fe4d-df0a-46d0-b99e-6a4144569984
+        discordId:
+          type: integer
+          format: Snowflake
+          description: Discord ID of the app user
+          example: 123456789012345678
+        role:
+          type: integer
+          description: Role of the app user (0 = member, 1 = admin, 2 = clan staff, 3 = journalist, 4 = moderator)
+          example: 0
+          default: 0
+    ContentPage:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid4
+          description: Unique identifier for the content page
+          example: 3e39fe4d-df0a-46d0-b99e-6a4144569984
+        displayName:
+          type: string
+          description: Display name of the content page
+          example: Example Content Page
+        content:
+          type: string
+          description: Content of the content page
+          example: This is an example content page.
+        sidebarContent:
+          type: string
+          description: Content of the sidebar of the content page
+          example: This is an example sidebar content page.
