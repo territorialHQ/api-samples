@@ -58,10 +58,11 @@ This protocol is optional and only required if you want to support automatic poi
 POST /:user HTTP/1.1
 Host: example.com
 Content-Type: text/plain
+```
 
-eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjAwMDAwMDAwMDAwMDAwMDAwMCIsInBvaW50cyI6NTAsImNsYW4iOiJFWEFNUExFIiwiaWF0IjoxNjg5MTIwMDc0LCJuYmYiOjE2ODkxMjAwNzQsImV4cCI6MTY4OTEyMDEzNH0.YfNiHhAt0ZVHAk
-Mh5L2YNHNwmDwepWob1I22yKpXtRD5nTzxV5Q4bVXQYElHWUtZO0dh-DdF1LLX4qhNuTBNoLzAHTfksGNBhpLyZdUEKgeT8FN7KEF8OqJZR7CGoGTMtD2zstaZhpzFWdkKZ-qpro_v-IZlpTkxZrDxg7xy2X0TM2quB8OaNaau6Cw_EHLAibDRC_zCRbrxMlzNdJFstQ9gY
-EyNsCOnnwH5mCqouioM7qn1r7vDgC-Q8yg71ameLZQ0is72dA8v6tU_c_m33a7YEeYa2cI6w5pJl95W2IzlOsZ2Wi6HnmOvkVxXW20wYHg5gh7URDiwHA_8pLnsUA
+Example payload
+```
+eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjAwMDAwMDAwMDAwMDAwMDAwMCIsInBvaW50cyI6NTAsImNsYW4iOiIwMDAwMDAwMDAwMDAwMDAwMDAiLCJpYXQiOjE2ODkxMjAwNzQsIm5iZiI6MTY4OTEyMDA3NCwiZXhwIjoxNjg5MTIwMTM0fQ.PJJZQR_vZS93iZnxovKwKo3ps0x1wgEi_KhbsnIkLrs5E3CPn28ymaa8GE8QZtbxT490nwzRxTPHLCs0Ng1pjb9dSLQWX2_4ukJcww6Guftm1K65bqDpxIO1HEHLmmKYXcd4LJOYeWJVQbvgJisg5Yx_LLeA6eNgHw6yDJfzp45-y__ccrgGjtUw-9xrythy1zs4nf4YIX-4-8rbo-BVG3fcz_TqMs77xnqsN3UHvEAv_YDvdvQ_5krgbq-OZIblcbNlBVxBzHUoMT-KvwTFe6ITGwyEQxiF46aYnbqPB9m_iaGOv1BSndaS6ciCgRUBZJ9s7cBhqtjeU5bE6CchjQ
 ```
 
 Where `:user` is the discord user id of the user the points should be added to. <br>
@@ -71,7 +72,7 @@ The request body is a JWT token containing the following information:
 {
   "username": "000000000000000000",
   "points": 50,
-  "clan": "EXAMPLE",
+  "clan": "3e39fe4d-df0a-46d0-b99e-6a4144569984",
   "iat": 1689120074,
   "nbf": 1689120074,
   "exp": 1689120134
@@ -79,7 +80,7 @@ The request body is a JWT token containing the following information:
 ```
 
 The token can be verified using the following public key. <br>
-Make sure to also check whether the username matches the user id in the url and that the clan matches your clan tag. <br>
+Make sure to also check whether the username matches the user id in the url and that the clan field matches your clans discord guild id. <br>
 Depending on your implementation you might also want to check the `iat`, `nbf` and `exp` fields to make sure the token is within the valid life span.
 
 ```
@@ -104,6 +105,7 @@ import jwt from 'jsonwebtoken';
 
 const db = new sqlite3.Database(/*...*/);
 const publicKey = `PUBLIC KEY (see above)`;
+const myClanId = "DISCORD SERVER ID HERE";
 
 createServer(function (r, s) {
     if (r.url.startsWith("/user/") && r.method === "POST") {
@@ -115,7 +117,7 @@ createServer(function (r, s) {
         r.on("end", () => {
             let token = body;
             let decoded = jwt.verify(token, publicKey);
-            if (decoded.username !== username || decoded.clan !== "EXAMPLE") {
+            if (decoded.username !== username || decoded.clan !== myClanId) {
                 s.writeHead(400);
                 s.write("Bad Request");
                 s.end();
