@@ -1,7 +1,8 @@
 # Bot Endpoint Documentation
 
 TerritorialHQ interacts with various discord bots to display points earned by users and to offer a seamless and automatic management of points for the end user. To support this, your bot will need to implement a simple endpoint that allows to interact with the TerritorialHQ Infrastructure. <br>
-**After setting up the endpoint make sure to add it to your clan at "Custom Bot HttpGet Endpoint"**
+**After setting up the endpoint make sure to add it to your clan at "Custom Bot HttpGet Endpoint"** <br>
+**If you want to support automatic point submission, dm @platz1de on discord with your endpoint url and information about your use-case**
 
 ## GET Endpoint
 
