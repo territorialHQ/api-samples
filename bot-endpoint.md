@@ -56,24 +56,34 @@ The post endpoint is used to submit results of games. All results are verified b
 This protocol is optional and only required if you want to support automatic point submission. <br>
 
 ```http
-POST /:user HTTP/1.1
+POST / HTTP/1.1
 Host: example.com
 Content-Type: text/plain
 ```
 
 Example payload
 ```
-eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjAwMDAwMDAwMDAwMDAwMDAwMCIsInBvaW50cyI6NTAsImNsYW4iOiIwMDAwMDAwMDAwMDAwMDAwMDAiLCJpYXQiOjE2ODkxMjAwNzQsIm5iZiI6MTY4OTEyMDA3NCwiZXhwIjoxNjg5MTIwMTM0fQ.PJJZQR_vZS93iZnxovKwKo3ps0x1wgEi_KhbsnIkLrs5E3CPn28ymaa8GE8QZtbxT490nwzRxTPHLCs0Ng1pjb9dSLQWX2_4ukJcww6Guftm1K65bqDpxIO1HEHLmmKYXcd4LJOYeWJVQbvgJisg5Yx_LLeA6eNgHw6yDJfzp45-y__ccrgGjtUw-9xrythy1zs4nf4YIX-4-8rbo-BVG3fcz_TqMs77xnqsN3UHvEAv_YDvdvQ_5krgbq-OZIblcbNlBVxBzHUoMT-KvwTFe6ITGwyEQxiF46aYnbqPB9m_iaGOv1BSndaS6ciCgRUBZJ9s7cBhqtjeU5bE6CchjQ
+eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRzIjpbeyJ1c2VybmFtZSI6IjExMDc0MTU5MTQ4NjI4Nzg4NzEiLCJwb3NpdGlvbiI6MX0seyJ1c2VybmFtZSI6IjExMjQ2OTEzMTE2NjA4OTIyNDIiLCJwb3NpdGlvbiI6Nzh9XSwidGVhbUNvdW50Ijo0LCJwb2ludHMiOjQyMCwibWFwIjoxMCwiY2xhbiI6IjExMDE5ODE2MTEyNDQ5MjUwMTAiLCJpYXQiOjE2ODkxMjAwNzQsIm5iZiI6MTY4OTEyMDA3NCwiZXhwIjoxNjg5MTIwMTM0fQ.aJE1zcJyPY0nr4fp_GV2N9MIcQpnSzM_b-MjkF5cHFzAyt2hWM5Er3kn0pH4vOG7xoKwZQFaYnYqCXJMPL_DN5Apl7jKjKstOMQr1R3yWhAxTDDnJ1NjASpvmm9b0bAYERujb0XF_ZSEYBO8WdLbQJ5uLxysq-ULnn7lv7RJrRRzaeLCiLX_I8Vcfxzduw1i4xIkR3qY1lVMKRhqSmhi_fXon3TEX4gA82OSnDtxVRc1xFTkoUV3TTYJmCzG8FuWGDToqc9JYA_httFFG6U2KlWMsZ9Wlz121jhDsT6oD6LN3IMSTrzPH3avMSE_Ro0BXIlExfhKU44lKOq4Z4CXiQ
 ```
 
-Where `:user` is the discord user id of the user the points should be added to. <br>
 The request body is a JWT token containing the following information:
 
 ```json
 {
-  "username": "000000000000000000",
-  "points": 50,
-  "clan": "3e39fe4d-df0a-46d0-b99e-6a4144569984",
+  "clients": [
+	{
+	  "username": "1107415914862878871",
+	  "position": 1
+	},
+	{
+	  "username": "1124691311660892242",
+	  "position": 78
+	}
+  ],
+  "teamCount": 4,
+  "points": 420,
+  "map": 10,
+  "clan": "1101981611244925010",
   "iat": 1689120074,
   "nbf": 1689120074,
   "exp": 1689120134
@@ -109,33 +119,30 @@ const publicKey = `PUBLIC KEY (see above)`;
 const myClanId = "DISCORD SERVER ID HERE";
 
 createServer(function (r, s) {
-    if (r.url.startsWith("/user/") && r.method === "POST") {
-        let username = r.url.substr(6);
-        let body = "";
-        r.on("data", (chunk) => {
-            body += chunk;
-        });
-        r.on("end", () => {
-            let token = body;
-            let decoded = jwt.verify(token, publicKey);
-            if (decoded.username !== username || decoded.clan !== myClanId) {
-                s.writeHead(400);
-                s.write("Bad Request");
-                s.end();
-                return;
-            }
-            db.run("UPDATE table SET points = points + ? WHERE member = ?", [decoded.points, decoded.username], (err) => {
-                if (err) {
-                    s.writeHead(500);
-                    s.write("Internal Server Error");
-                } else {
-                    // It's recommended to send some kind of log to your clan's discord server here
-                    s.writeHead(200);
-                    s.write("OK");
-                }
-                s.end();
-            });
-        });
-    }
+	if (r.method === "POST") {
+		let body = "";
+		r.on("data", (chunk) => {
+			body += chunk;
+		});
+		r.on("end", () => {
+			let token = body;
+			let decoded = jwt.verify(token, publicKey);
+			if (decoded.clan !== myClanId) {
+				s.writeHead(400);
+				s.write("Bad Request");
+				s.end();
+				return;
+			}
+			for (let client of decoded.clients) {
+				// You can implement any kind of logic related to player positions, map type, etc. here
+				db.run("UPDATE table SET points = points + ? WHERE member = ?", [decoded.points, client.username], (err) => {
+					// It's recommended to send some kind of log to your clan's discord server here
+				});
+			}
+			s.writeHead(200);
+			s.write("OK");
+			s.end();
+		});
+	}
 }).listen(8080);
 ```
